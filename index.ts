@@ -12,33 +12,48 @@ async function main() {
 
         const doc = []
 
-        const titles = document.querySelectorAll(".home-list-pop-desc.inn-list-pop-desc a h3")
-        // const titlesArray = Array.from(titles).map((title) => title.textContent);
-        const links = document.querySelectorAll(".home-list-pop-desc.inn-list-pop-desc a")
-        // const linksArray = Array.from(links).map((links) => links.getAttribute('href'));
-        const roomDetails = document.querySelectorAll('.room-details p');
-        // const a = roomDetails.querySelector('.fas.fa-map-marker-alt')
-        const detailsArray = Array.from(roomDetails).map((roomDetail) => roomDetail.textContent)
+        const parent = document.querySelector(".home-list-pop-desc.inn-list-pop-desc");
 
-        // Array.from(document.querySelectorAll('.fas.fa-map-marker-alt'), element => element.nextSibling.textContent.trim())
+        const parents = document.querySelectorAll(".home-list-pop-desc.inn-list-pop-desc");
 
-        return detailsArray
+        for (let i = 0; i < parents.length; i++) {
+            const details = parents[i]?.querySelector(".room-details")
+            doc.push({
+                // get title from the <h3> tag text
+                title: parents[i]?.querySelector('h3')?.innerText,
 
+                //get href attribute from <a> tag
+                link: parents[i]?.querySelector('a')?.getAttribute('href'),
 
-        // return Array.from(anchors, (anchor) => {
-        //     const h3 = anchor.querySelector('h3');
-        //     return {
-        //         title: h3? h3.innerHTML : '',
-        //         link: anchor.getAttribute('href')
-        //     };
-        // });
+                // <div class="room-details">
+                //     <p>
+                //         <i class="fas fa-map-marker-alt"></i> 
+                //         Desa ParkCity, Kepong
+                //     </p>
+                //                         <p>
+                //         <i class="fas fa-users"></i> 
+                //         Prefer move-in immediately, &lt; 6 month, 6 month, 12 month and above, Student, Employed, Unemployed, Malay, Chinese, Indian, Other, Prefer Zero Deposit 
+                //     </p>
 
-        // return Array.from({ length: titles.length }, (_, i) => ({
-        //     title: titles[i].innerHTML,
-        //     link: links[i].getAttribute('href')
-        // }));
-        // const locationsArray = Array.from(locations).map((locations) => locations.textContent);
-        // return locations?.innerHTML
+                //                         <p>
+                //         <i class="fas fa-bed"></i>
+                //         Single Room
+                //     </p>
+                //                         <p>
+                //         <i class="far fa-plus-square"></i>
+                //         Air-Conditioning, Washing Machine, Wifi / Internet Access, Cooking Allowed, TV, Share Bathroom, Private Bathroom, Near KTM / LRT, Near LRT / MRT, Near KTM, Near LRT, Near MRT, Near Bus stop, 24 hours security, Mini Market
+                //     </p>
+
+                // get localtion from <p> tag containing the <i> element with the specified classes
+                // after get the <p> tag get the text from the parent element
+                location: details?.querySelector("p > i.fas.fa-map-marker-alt")?.parentElement?.textContent?.trim(),
+                preferences: details?.querySelector("p > i.fas.fa-users")?.parentElement?.textContent?.trim(),
+                bed: details?.querySelector("p > i.fas.fa-bed")?.parentElement?.textContent?.trim(),
+                accommodations: details?.querySelector("p > i.fa-plus-square")?.parentElement?.textContent?.trim(),
+            });
+        };
+
+        return doc
     });
 
     await browser.close();
