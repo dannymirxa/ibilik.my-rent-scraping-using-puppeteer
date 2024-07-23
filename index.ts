@@ -1,29 +1,46 @@
 import puppeteer from 'puppeteer';
+import { getDetails } from './getDetails.ts'
 
-async function main() {
+// console.log(await getDetails('https://www.ibilik.my/rooms/8191180/taman-connought-single-room'))
+
+async function getFrontDetails(url: string) {
     const browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
-    await page.goto('https://www.ibilik.my/rooms/kuala_lumpur?location_search=2&location_search_name=Kuala%20Lumpur%2C%20Malaysia', { waitUntil: 'load' });
-    // await page.screenshot({path: 'ibilikcom.png'});
+    await page.goto(url, { waitUntil: 'load' });
+    await page.exposeFunction('getDetails', getDetails)
 
-     
+    // console.log(url)
 
-    const data = await page.evaluate(() => {
+    const data = await page.evaluate(async () => {
 
         const doc = []
+        // const parent = document.querySelector(".home-list-pop-desc.inn-list-pop-desc");
 
-        const parent = document.querySelector(".home-list-pop-desc.inn-list-pop-desc");
+        const parents = Array.from(document.querySelectorAll(".home-list-pop-desc.inn-list-pop-desc"));
 
-        const parents = document.querySelectorAll(".home-list-pop-desc.inn-list-pop-desc");
+        // for (let i = 0; i < parents.length; i++) {
+        for (let i in parents) {
 
-        for (let i = 0; i < parents.length; i++) {
             const details = parents[i]?.querySelector(".room-details")
+
+            const linkUrl = parents[i]?.querySelector('a')?.getAttribute('href')?.toString();
+
+            let detail: { price: string | null | undefined; description: string | null | undefined; name: string | null | undefined; number: string | null | undefined; } | null = null;
+            
+            try {
+                detail = await getDetails(linkUrl)
+            } catch (error) {
+                // handle error
+                detail = null
+            }
+            // 
+
             doc.push({
                 // get title from the <h3> tag text
                 title: parents[i]?.querySelector('h3')?.innerText,
 
                 //get href attribute from <a> tag
-                link: parents[i]?.querySelector('a')?.getAttribute('href'),
+                link: linkUrl,
 
                 // <div class="room-details">
                 //     <p>
@@ -50,6 +67,7 @@ async function main() {
                 preferences: details?.querySelector("p > i.fas.fa-users")?.parentElement?.textContent?.trim(),
                 bed: details?.querySelector("p > i.fas.fa-bed")?.parentElement?.textContent?.trim(),
                 accommodations: details?.querySelector("p > i.fa-plus-square")?.parentElement?.textContent?.trim(),
+                details: detail
             });
         };
 
@@ -58,7 +76,13 @@ async function main() {
 
     await browser.close();
 
-    console.log(data)
+    return data
+    
+   
+}
+
+async function main() {
+    console.log(await getFrontDetails('https://www.ibilik.my/rooms/kuala_lumpur?location_search=2&location_search_name=Kuala%20Lumpur%2C%20Malaysia'))
 };
 
 main();
