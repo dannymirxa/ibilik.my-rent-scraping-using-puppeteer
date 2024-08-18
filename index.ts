@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 import { getDetails } from './getDetails.ts'
-import { flattenJson } from './flattenJSON.ts';
+import { flattenJson } from './flattenJson.ts';
 import * as fs from 'fs';
 
 // console.log(await getDetails('https://www.ibilik.my/rooms/8191180/taman-connought-single-room'))
