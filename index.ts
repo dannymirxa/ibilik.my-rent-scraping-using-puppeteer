@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
 import { getDetails } from './getDetails.ts'
+import { flattenJson } from './flattenJSON.ts';
+import * as fs from 'fs';
 
 // console.log(await getDetails('https://www.ibilik.my/rooms/8191180/taman-connought-single-room'))
 
@@ -23,17 +25,19 @@ async function getFrontDetails(url: string) {
 
             const details = parents[i]?.querySelector(".room-details")
 
-            const linkUrl = parents[i]?.querySelector('a')?.getAttribute('href')?.toString();
+            const linkUrl = parents[i]?.querySelector('a')?.getAttribute('href')?.toString()!;
 
             let detail: { price: string | null | undefined; description: string | null | undefined; name: string | null | undefined; number: string | null | undefined; } | null = null;
             
-            try {
-                detail = await getDetails(linkUrl)
-            } catch (error) {
-                // handle error
-                detail = null
-            }
+            // try {
+            //     detail = await getDetails(linkUrl)
+            // } catch (error) {
+            //     // handle error
+            //     detail = null
+            // }
             // 
+
+            detail = await getDetails(linkUrl)
 
             doc.push({
                 // get title from the <h3> tag text
@@ -77,12 +81,22 @@ async function getFrontDetails(url: string) {
     await browser.close();
 
     return data
-    
-   
+      
+}
+
+async function flattenData(link: string) {
+    const data = await getFrontDetails(link)
+    const flattenData: any = data.map(i => flattenJson(i))
+    return flattenData
 }
 
 async function main() {
-    console.log(await getFrontDetails('https://www.ibilik.my/rooms/kuala_lumpur?location_search=2&location_search_name=Kuala%20Lumpur%2C%20Malaysia'))
+    // const data = await getFrontDetails('https://www.ibilik.my/rooms/kuala_lumpur?location_search=2&location_search_name=Kuala%20Lumpur%2C%20Malaysia')
+    // data.forEach(i => {
+    //     console.log(flattenJson(i))
+    // })
+    const data = await flattenData('https://www.ibilik.my/rooms/kuala_lumpur?location_search=2&location_search_name=Kuala%20Lumpur%2C%20Malaysia')
+    fs.writeFileSync('./houseData.json', JSON.stringify(data))
 };
 
 main();

@@ -6,9 +6,10 @@
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.3"
   },
   "dependencies": {
+    "bun": "^1.1.24",
     "npx": "^10.2.2",
     "puppeteer": "22.12.1"
   }
