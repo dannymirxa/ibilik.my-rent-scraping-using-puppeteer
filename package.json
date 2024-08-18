@@ -1,0 +1,16 @@
+{
+  "name": "puppeteer-scraping",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "bun": "^1.1.24",
+    "npx": "^10.2.2",
+    "puppeteer": "22.12.1"
+  }
+}
